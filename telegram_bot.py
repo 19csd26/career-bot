@@ -100,12 +100,12 @@ def fmt_next() -> str:
     unsolved = [p for p in problems if str(p["id"]) not in solved_ids]
 
     if not unsolved:
-        return "✅ All this week's problems solved\\! Run /week to see what's next."
+        return "✅ All this week's problems solved! Run /week to see what's next."
 
     p = unsolved[0]
     slug = p["name"].lower().replace(" ", "-").replace("(", "").replace(")", "").replace("/", "")
     return (
-        f"🎯 *Next: LC {p['id']}\\. {p['name']}*\n\n"
+        f"🎯 *Next: LC {p['id']}. {p['name']}*\n\n"
         f"Difficulty: `{p['diff']}`\n"
         f"💡 Hint: _{p['hint']}_\n\n"
         f"🔗 [Open on LeetCode](https://leetcode.com/problems/{slug}/)\n\n"
@@ -130,7 +130,7 @@ def fmt_week() -> str:
         lines.append("*Problems this week:*")
         for p in problems:
             done = "✅" if str(p["id"]) in solved_ids else "⭕"
-            lines.append(f"{done} LC {p['id']}\\. {p['name']} `[{p['diff']}]`")
+            lines.append(f"{done} LC {p['id']}. {p['name']} `[{p['diff']}]`")
             if str(p["id"]) not in solved_ids:
                 lines.append(f"   💡 _{p['hint']}_")
     else:
@@ -143,7 +143,7 @@ def fmt_progress() -> str:
     stats = get_stats()
     week_num = current_week_number()
     expected = week_num * 5
-    status = "✅ On track" if stats["total_solved"] >= expected else f"⚠️ Behind \\(expected ~{expected}\\)"
+    status = "✅ On track" if stats["total_solved"] >= expected else f"⚠️ Behind (expected ~{expected})"
 
     solved_list = ""
     if stats["solved_problems"]:
@@ -172,9 +172,9 @@ def fmt_progress() -> str:
         f"{'✅' if stats['resume_updated'] else '⭕'} Resume updated with metrics\n"
         f"{'✅' if stats['linkedin_updated'] else '⭕'} LinkedIn updated\n"
         f"{'✅' if stats['side_project_done'] else '⭕'} Side project deployed\n\n"
-        f"*Top Targets \\(not yet applied\\)*\n"
+        f"*Top Targets (not yet applied)*\n"
         + "\n".join(
-            f"• {c['name']} \\| {c['domain']}"
+            f"• {c['name']} | {c['domain']}"
             for c in TARGET_COMPANIES[:5]
             if c["name"] not in {
                 (x["company"] if isinstance(x, dict) else x)
@@ -207,8 +207,8 @@ def fmt_morning_reminder() -> str:
     unsolved = [p for p in problems if str(p["id"]) not in solved_ids]
 
     msg = (
-        f"🌅 *Good morning, Raghav\\!*\n"
-        f"Time for your DSA block \\(6:00 – 7:30 AM\\)\n\n"
+        f"🌅 *Good morning, Raghav!*\n"
+        f"Time for your DSA block (6:00 - 7:30 AM)\n\n"
         f"Week {week_plan['week']}: *{week_plan['theme']}*\n"
         f"Solved so far: {stats['total_solved']} problems\n\n"
     )
@@ -216,13 +216,13 @@ def fmt_morning_reminder() -> str:
         p = unsolved[0]
         slug = p["name"].lower().replace(" ", "-").replace("(", "").replace(")", "")
         msg += (
-            f"*Solve today:* LC {p['id']}\\. {p['name']} `[{p['diff']}]`\n"
+            f"*Solve today:* LC {p['id']}. {p['name']} `[{p['diff']}]`\n"
             f"💡 _{p['hint']}_\n"
             f"🔗 [Open problem](https://leetcode.com/problems/{slug}/)\n\n"
             f"Log when done: `/log solved {p['id']}`"
         )
     else:
-        msg += "All this week's problems done\\! Do a revision round or start next week's list\\."
+        msg += "All this week's problems done! Do a revision round or start next week's list."
     return msg
 
 
@@ -232,7 +232,7 @@ def fmt_evening_reminder() -> str:
     task = week_plan.get("evening_task", "Study system design or work on applications")
 
     msg = (
-        f"🌙 *Evening study block \\(8:00 – 9:30 PM\\)*\n\n"
+        f"🌙 *Evening study block (8:00 - 9:30 PM)*\n\n"
         f"*Tonight's focus:* {task}\n\n"
     )
     nudges = []
@@ -255,12 +255,12 @@ def fmt_weekly_reminder() -> str:
 
     return (
         f"📋 *Sunday Weekly Review — Week {week_plan['week']}*\n\n"
-        f"Problems solved: {stats['total_solved']} {'✅' if on_track else f'⚠️ behind \\(expected ~{expected}\\)'}\n"
+        f"Problems solved: {stats['total_solved']} {'✅' if on_track else f'⚠️ behind (expected ~{expected})'}\n"
         f"Companies applied: {stats['companies_applied']}\n"
         f"Mock interviews: {stats['mock_interviews']}\n"
         f"System design sessions: {stats['system_design_sessions']}\n\n"
-        f"Open your Notion Weekly Review Log and fill in this week's entry\\.\n"
-        f"Set your 3 priorities for next week before you close Notion\\."
+        f"Open your Notion Weekly Review Log and fill in this week's entry.\n"
+        f"Set your 3 priorities for next week before you close Notion."
     )
 
 
@@ -270,22 +270,22 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     save_chat_id(chat_id)
     await update.message.reply_text(
-        "👋 *Welcome, Raghav\\!*\n\n"
-        "I'm your CareerBot — personal DSA \\+ career coach powered by Groq\\.\n\n"
+        "👋 *Welcome, Raghav!*\n\n"
+        "I'm your CareerBot — personal DSA + career coach powered by Groq.\n\n"
         "*Commands:*\n"
-        "/today — today's plan \\+ next problem\n"
+        "/today — today's plan + next problem\n"
         "/next — next unsolved problem\n"
         "/week — full week schedule\n"
         "/progress — progress dashboard\n"
-        "/log — log activity \\(see examples below\\)\n\n"
+        "/log — log activity (see examples below)\n\n"
         "*Logging examples:*\n"
         "`/log solved 217` — mark LC 217 solved\n"
         "`/log applied Razorpay` — log an application\n"
         "`/log mock` — log a mock interview\n"
         "`/log design` — log a system design session\n"
         "`/log resume` — mark resume updated\n\n"
-        "*Or just type anything* and I'll coach you\\! 🎯",
-        parse_mode="MarkdownV2",
+        "*Or just type anything* and I'll coach you! 🎯",
+        parse_mode="Markdown",
     )
 
 
@@ -294,15 +294,15 @@ async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_next(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(fmt_next(), parse_mode="MarkdownV2")
+    await update.message.reply_text(fmt_next(), parse_mode="Markdown")
 
 
 async def cmd_week(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(fmt_week(), parse_mode="MarkdownV2")
+    await update.message.reply_text(fmt_week(), parse_mode="Markdown")
 
 
 async def cmd_progress(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(fmt_progress(), parse_mode="MarkdownV2")
+    await update.message.reply_text(fmt_progress(), parse_mode="Markdown")
 
 
 async def cmd_log(update: Update, context: ContextTypes.DEFAULT_TYPE):
