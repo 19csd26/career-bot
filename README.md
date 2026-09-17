@@ -12,7 +12,7 @@
 - **Sends macOS desktop notifications** at 6 AM (DSA) and 8 PM (study block) via cron
 - **AI coaching chat** powered by `gemma2:2b` running locally on Ollama — no API key, no internet needed
 - **Tracks applications, mock interviews, and milestones** with simple log commands
-- **Salary strategy, negotiation scripts, and company targeting** baked in
+- **Company targeting** with domain fit and priority rankings baked in
 
 ---
 
@@ -202,25 +202,6 @@ bot log mock
 | Evening: 8:00–9:30 PM | 1.5 hrs | System design / applications / study |
 | Weekend (Sat + Sun) | 3 hrs each | Side project, mock interviews, deep work |
 | **Total per week** | **~14 hrs** | Focused prep |
-
----
-
-## Salary Strategy (7 LPA → 30 LPA)
-
-### Two-Jump Approach
-
-| Jump | Timeline | Target CTC | Companies |
-|---|---|---|---|
-| Switch #1 | Month 3–4 | 15–20 LPA | Razorpay, PhonePe, CRED, Chargebee, Ather Energy |
-| Switch #2 | Month 12–15 | 28–35 LPA | Google, Microsoft, Swiggy, Groww, Zomato |
-
-### 5 Rules to Never Break
-
-1. **Never disclose your current CTC** — say: *"I prefer to discuss based on role budget and market rate"*
-2. **Always generate 3 simultaneous offers** — leverage is everything in negotiation
-3. **Time your final rounds together** — batch applications so offers land in the same 2-week window
-4. **Lead with your niche** — EV + Payments + IoT is rare; FinTech/CleanTech companies pay a premium for it
-5. **Never accept the first offer** — counter at 15–20% above; worst case they say no
 
 ---
 
