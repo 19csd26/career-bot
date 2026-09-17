@@ -7,6 +7,12 @@ __pycache__/
 # Local progress data (personal — not for version control)
 ~/.career-bot/
 
+# Secrets — never commit these
+.env
+
+# Local progress data
+data/
+
 # macOS
 .DS_Store
 
