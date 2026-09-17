@@ -1,0 +1,15 @@
+# Python virtualenv
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Local progress data (personal — not for version control)
+~/.career-bot/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
