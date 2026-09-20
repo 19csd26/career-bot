@@ -1,6 +1,6 @@
 # CareerBot — AI Career Coach + LeetCode Auto-Committer
 
-A personal DSA coaching system built for the **7 LPA → 30 LPA** journey.  
+A personal DSA coaching system built for the  journey.  
 Runs 24/7 in the background — accessible from your phone via Telegram.
 
 ---
