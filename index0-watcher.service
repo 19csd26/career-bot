@@ -1,0 +1,16 @@
+[Unit]
+Description=Index 0 → LeetCode Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=REPO_DIR
+ExecStart=REPO_DIR/.venv/bin/python REPO_DIR/index0_watcher.py
+Restart=always
+RestartSec=5
+StandardOutput=append:HOME_DIR/.career-bot/index0_watcher.log
+StandardError=append:HOME_DIR/.career-bot/index0_watcher_error.log
+
+[Install]
+WantedBy=default.target

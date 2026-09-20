@@ -48,6 +48,7 @@ setup_macos() {
     echo "Platform: macOS"
     install_launchagent "com.raghav.career-bot"
     install_launchagent "com.raghav.lc-watcher"
+    install_launchagent "com.raghav.index0-watcher"
 }
 
 # ── Linux ─────────────────────────────────────────────────────────────────────
@@ -74,6 +75,7 @@ setup_linux() {
 
     install_systemd "career-bot"
     install_systemd "lc-watcher"
+    install_systemd "index0-watcher"
 }
 
 # ── Run ───────────────────────────────────────────────────────────────────────
@@ -89,10 +91,15 @@ case "$OS" in
 esac
 
 echo ""
-echo "Both services are running and will auto-start on every login."
+echo "All 3 services are running and will auto-start on every login."
+echo ""
+echo "  career-bot      — Telegram bot"
+echo "  lc-watcher      — watches ~/LeetCode, auto-commits to GitHub"
+echo "  index0-watcher  — syncs Index 0 completions → ~/LeetCode"
 echo ""
 echo "Logs:"
 echo "  tail -f ~/.career-bot/telegram_bot_error.log"
 echo "  tail -f ~/.career-bot/lc_watcher_error.log"
+echo "  tail -f ~/.career-bot/index0_watcher_error.log"
 echo ""
 echo "Next step: open Telegram and send /start to your bot (first time only)."

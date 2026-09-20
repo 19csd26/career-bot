@@ -105,6 +105,9 @@ def commit_problem(folder_name: str):
         log.error(f"git commit failed: {out}")
         return
 
+    log.info(f"Syncing with remote ...")
+    git("pull", "--rebase", "origin", "main")
+
     log.info(f"Pushing to GitHub ...")
     code, out = git("push", "origin", "main")
     if code != 0:
