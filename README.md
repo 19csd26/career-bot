@@ -15,6 +15,7 @@ Runs 24/7 in the background — accessible from your phone via Telegram.
 | Today's problem + 12-week roadmap | `/today`, `/week` commands |
 | Progress tracking | `/progress` command |
 | LeetCode auto-commit to GitHub | Watches `~/LeetCode`, commits + pushes on file save |
+| Index 0 → GitHub sync | Solves in Index 0 → auto-writes code + docs → auto-commits |
 | Telegram notification on each solve | Sent by the auto-committer |
 | Local CLI bot | Ollama (`gemma2:2b`) — no internet needed |
 
@@ -83,9 +84,10 @@ bash setup.sh
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-This installs two background services that **auto-start on every login**:
+This installs three background services that **auto-start on every login**:
 - `career-bot` — Telegram bot
-- `lc-watcher` — LeetCode auto-committer
+- `lc-watcher` — watches `~/LeetCode`, auto-commits to GitHub
+- `index0-watcher` — syncs Index 0 completions → `~/LeetCode` → GitHub
 
 ### Step 5 — Connect Telegram
 
@@ -105,16 +107,13 @@ You should get a welcome message immediately.
 Services run as **LaunchAgents** (`~/Library/LaunchAgents/`).
 
 ```bash
-# Check status
+# Check all 3 services
 launchctl list | grep raghav
 
-# Restart Telegram bot
-launchctl unload ~/Library/LaunchAgents/com.raghav.career-bot.plist
-launchctl load ~/Library/LaunchAgents/com.raghav.career-bot.plist
-
-# Restart LeetCode watcher
-launchctl unload ~/Library/LaunchAgents/com.raghav.lc-watcher.plist
-launchctl load ~/Library/LaunchAgents/com.raghav.lc-watcher.plist
+# Restart individual services
+launchctl unload ~/Library/LaunchAgents/com.raghav.career-bot.plist && launchctl load ~/Library/LaunchAgents/com.raghav.career-bot.plist
+launchctl unload ~/Library/LaunchAgents/com.raghav.lc-watcher.plist && launchctl load ~/Library/LaunchAgents/com.raghav.lc-watcher.plist
+launchctl unload ~/Library/LaunchAgents/com.raghav.index0-watcher.plist && launchctl load ~/Library/LaunchAgents/com.raghav.index0-watcher.plist
 ```
 
 ### Linux (Kali, Ubuntu, Debian, etc.)
@@ -122,16 +121,15 @@ Services run as **systemd user services**.
 
 ```bash
 # Check status
-systemctl --user status career-bot
-systemctl --user status lc-watcher
+systemctl --user status career-bot lc-watcher index0-watcher
 
 # Restart
-systemctl --user restart career-bot
-systemctl --user restart lc-watcher
+systemctl --user restart career-bot lc-watcher index0-watcher
 
 # View logs
 journalctl --user -u career-bot -f
 journalctl --user -u lc-watcher -f
+journalctl --user -u index0-watcher -f
 ```
 
 ### Windows
@@ -144,7 +142,8 @@ taskschd.msc
 # Or manage via PowerShell
 Get-ScheduledTask -TaskName "CareerBot-*"
 Start-ScheduledTask  -TaskName "CareerBot-TelegramBot"
-Stop-ScheduledTask   -TaskName "CareerBot-TelegramBot"
+Start-ScheduledTask  -TaskName "CareerBot-LCWatcher"
+Start-ScheduledTask  -TaskName "CareerBot-Index0Bridge"
 ```
 
 ---
@@ -174,26 +173,49 @@ Stop-ScheduledTask   -TaskName "CareerBot-TelegramBot"
 
 ---
 
+## Index 0 → GitHub (Recommended workflow)
+
+Solve problems in **Index 0** — everything else is automatic.
+
+```
+You solve in Index 0
+       │
+       ▼  (index0_watcher polls every 10s)
+~/LeetCode/121. Best Time to Buy and Sell Stock/
+├── BestTimeToBuyAndSellStock.java   ← your passing code from Index 0
+└── best-time-to-buy-and-sell-stock.md  ← auto-generated docs
+       │
+       ▼  (lc_watcher detects new files, waits 12s)
+git commit "Best Time to Buy and Sell Stock"
+git push → github.com/19csd26/LeetCode
+       │
+       ▼
+Telegram notification: ✅ LC 121 committed!
+```
+
+**What `index0_watcher` does:**
+- Polls Index 0's local SQLite DB every 10 seconds
+- When a new problem is marked `completed`, extracts the passing code
+- Fetches the problem number + title from LeetCode
+- Creates the folder + code file + markdown in `~/LeetCode`
+- `lc_watcher` picks it up and commits automatically
+
+No manual file creation. No manual git commands.
+
+---
+
 ## LeetCode Auto-Committer
 
-When you solve a problem locally, just save your files — the watcher handles the rest.
-
-**How it works:**
-1. You save a file inside `~/LeetCode/121. Best Time to Buy and Sell Stock/`
-2. The watcher detects the change
-3. After 12 seconds of no activity it auto-commits and pushes to GitHub
-4. You receive a Telegram notification
+If you prefer to write solutions manually, drop files into `~/LeetCode` and the watcher commits them automatically.
 
 **Folder naming convention** (required):
 ```
 ~/LeetCode/
 ├── 1. Two Sum/
 │   ├── two_sum.rb
-│   ├── two_sum_traced.rb
 │   └── two-sum.md
 ├── 121. Best Time to Buy and Sell Stock/
-│   ├── buy_and_sell_stock.rb
-│   ├── buy_and_sell_stock_traced.rb
+│   ├── BestTimeToBuyAndSellStock.java
 │   └── best-time-to-buy-and-sell-stock.md
 ```
 
@@ -277,6 +299,7 @@ Get-Content $env:USERPROFILE\.career-bot\lc_watcher_error.log -Wait
 career-bot/
 ├── telegram_bot.py          # Telegram bot — commands, AI chat, scheduled reminders
 ├── lc_watcher.py            # LeetCode file watcher — auto-commit + Telegram notify
+├── index0_watcher.py        # Index 0 → LeetCode bridge — polls SQLite, writes files
 ├── bot.py                   # Local CLI bot (Ollama)
 ├── roadmap.py               # 12-week DSA plan + NeetCode problem list
 ├── tg_tracker.py            # Progress tracker for Telegram bot (data/progress.json)
@@ -289,10 +312,12 @@ career-bot/
 ├── setup.ps1                # Auto-start setup — Windows
 ├── setup_cron.sh            # Cron-based reminders (alternative to LaunchAgent)
 │
-├── com.raghav.career-bot.plist   # macOS LaunchAgent — Telegram bot
-├── com.raghav.lc-watcher.plist   # macOS LaunchAgent — LeetCode watcher
-├── career-bot.service            # Linux systemd service — Telegram bot
-├── lc-watcher.service            # Linux systemd service — LeetCode watcher
+├── com.raghav.career-bot.plist        # macOS LaunchAgent — Telegram bot
+├── com.raghav.lc-watcher.plist        # macOS LaunchAgent — LeetCode watcher
+├── com.raghav.index0-watcher.plist    # macOS LaunchAgent — Index 0 bridge
+├── career-bot.service                 # Linux systemd service — Telegram bot
+├── lc-watcher.service                 # Linux systemd service — LeetCode watcher
+├── index0-watcher.service             # Linux systemd service — Index 0 bridge
 │
 ├── requirements.txt         # Python dependencies
 ├── .env.example             # Environment variable template
@@ -323,6 +348,11 @@ tail -30 ~/.career-bot/telegram_bot_error.log
 **No Telegram notification after a commit:**
 - Make sure you sent `/start` to your bot at least once
 - Verify `~/career-bot/data/chat_id.txt` exists and has a number in it
+
+**Index 0 completions not syncing:**
+- Check: `tail -f ~/.career-bot/index0_watcher_error.log`
+- Make sure the problem reached the `final` stage and all tests passed in Index 0
+- First sync may take up to 10 seconds after completing a problem
 
 **Groq AI not responding:**
 - Check your `GROQ_API_KEY` in `.env`
